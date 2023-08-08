@@ -3,3 +3,4 @@ data/mat_libraries.tar
 data/mat_libraries/*
 *.pyc
 data/favor_preview/*
+data/favor_preview
