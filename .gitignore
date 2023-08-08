@@ -2,4 +2,4 @@
 data/mat_libraries.tar
 data/mat_libraries/*
 *.pyc
-data/favor_preview/body_utils/body_models/smplx/*
+data/favor_preview/*
