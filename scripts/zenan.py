@@ -5,14 +5,14 @@ import pickle
 from tqdm import tqdm
 # from smplx_blender import body,mesh,material,utils
 
-from smplx_blender import body
+from smplx_blender import utils
 print(torch.__version__)
 print(torch.cuda.is_available())
 
 model_path=os.path.join("data","favor_preview","body_utils","body_models","smplx")
 path=os.path.join("data","zenan","A002-2023-0419-1400-37-task-5-seq-5-cylinder_bottle_s341.pkl")
 
-savePath = os.path.splitext(path)[0] + "_dumped"
+savePath = os.path.splitext(path)[0] + "_dumped.pkl"
 
 
 skip=100
@@ -81,11 +81,14 @@ data = {}
 data["verts"] = verts
 data["faces"] = faces
 
+translations = np.array([utils.getAffineMatFromTranslArray(t) for t in batch["transl_obj"][0].cpu().numpy()])
+rots = np.array([utils.getAffineMat(r) for r in batch["global_orient_rotmat_obj"][0].cpu().numpy()])
+
+trs = np.array([np.matmul(t,r) for t,r in zip(translations, rots)])
+data["manip_trs"] = trs
+data["manip_verts"] = batch["verts_obj"].cpu().numpy()[0]
+print(data)
+
+
 with open(savePath,"wb") as f:
     pickle.dump(data,f)
-
-print(verts)
-print(faces)
-# for fid,vertices in tqdm(enumerate(v_gt[start_frame::skip])):
-#     name = str(fid)
-#     mesh.createMesh(name, vertices=vertices, faces=bm.faces, matrix=matrix)
