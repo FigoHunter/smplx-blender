@@ -3,10 +3,11 @@ from .errors import MeshError
 from . import material,utils
 import numpy as np
 
-def createMesh(name,*, vertices, faces, matrix=None,edges=[], mat = None):
+def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None):
 
     vertices = utils.ndarray_pydata.parse(vertices)
-    faces = utils.ndarray_pydata.parse(faces)
+    if len(faces)>0:
+        faces = utils.ndarray_pydata.parse(faces)
     
     print(vertices.__class__.__name__)
     print(matrix.__class__.__name__)
@@ -20,8 +21,6 @@ def createMesh(name,*, vertices, faces, matrix=None,edges=[], mat = None):
         print(vertices)
         if matrix is not None:
             vertices = np.transpose(np.matmul(matrix,np.transpose(vertices)))
-        if not faces:
-            raise MeshError("faces is not defined")
         mesh.from_pydata(vertices, edges, faces)
         mesh.validate()
 
@@ -34,7 +33,7 @@ def createMesh(name,*, vertices, faces, matrix=None,edges=[], mat = None):
     bpy.ops.object.select_all(action='DESELECT')
     obj.select_set(True)
     if not mat:
-        mat = material.createDiffuseMaterial()
+        mat = material.createDiffuseMaterial(0.8,0,8,0.8)
     obj.active_material = mat
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.shade_smooth()
