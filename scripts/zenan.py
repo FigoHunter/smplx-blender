@@ -14,13 +14,6 @@ path=os.path.join("data","zenan","A002-2023-0419-1400-37-task-5-seq-5-cylinder_b
 
 savePath = os.path.splitext(path)[0] + "_dumped.pkl"
 
-
-skip=100
-start_frame=0
-
-matrix=np.array([[-1,0,0],[0,0,1],[0,1,0]])
-
-
 device = "cuda"
 gender = "female"
 
