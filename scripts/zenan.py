@@ -3,12 +3,16 @@ import numpy as np
 import os
 import pickle
 from tqdm import tqdm
-from smplx_blender import body,mesh,material,utils
+# from smplx_blender import body,mesh,material,utils
+
+from smplx_blender import body
 print(torch.__version__)
 print(torch.cuda.is_available())
 
-model_path=os.path.join(utils.DATA_PATH,"favor_preview","body_utils","body_models")
-path=os.path.join(utils.DATA_PATH,"zenan","A002-2023-0419-1400-37-task-5-seq-5-cylinder_bottle_s341.pkl")
+model_path=os.path.join("data","favor_preview","body_utils","body_models","smplx")
+path=os.path.join("data","zenan","A002-2023-0419-1400-37-task-5-seq-5-cylinder_bottle_s341.pkl")
+
+savePath = os.path.splitext(path)[0] + "_dumped"
 
 
 skip=100
@@ -17,11 +21,9 @@ start_frame=0
 matrix=np.array([[-1,0,0],[0,0,1],[0,1,0]])
 
 
-device = "cpu"
+device = "cuda"
 gender = "female"
 
-bm = body.get_body_model(model_path,"smplx", gender, 1, device=device)
-result = pickle.load(open(path, "rb"))
 
 def parms_6D2full(pose, trans):
 
@@ -34,7 +36,6 @@ def parms_6D2full(pose, trans):
     return body_parms
 
 def full2bone(pose, trans):
-
     global_orient = pose[:, 0:1]
     body_pose = pose[:, 1:22]
     jaw_pose = pose[:, 22:23]
@@ -56,13 +57,35 @@ def full2bone(pose, trans):
     return body_parms
 
 
+result = pickle.load(open(path, "rb"))
 batch=result['batch_gt']
+
+from smplx import SMPLXLayer
+female_model = SMPLXLayer(
+    model_path=model_path,
+    gender='female',
+    num_pca_comps=45,
+    flat_hand_mean=True,
+)
+bm = female_model.to(device)
 
 body_params_gt = parms_6D2full(batch['fullpose_rotmat'][0], batch['transl'][0])
 body_params_gt['betas']=torch.repeat_interleave(batch['betas'].clone(),22, dim=0).reshape(-1,10).to(device)
 sbj_output_gt = bm(**body_params_gt)
 v_gt = sbj_output_gt.vertices.reshape(-1, 10475, 3)##(22, 10475, 3)
 
-for fid,vertices in tqdm(enumerate(v_gt[start_frame::skip])):
-    name = str(fid)
-    mesh.createMesh(name, vertices=vertices, faces=bm.faces, matrix=matrix)
+verts = v_gt.cpu().numpy()
+faces=bm.faces
+
+data = {}
+data["verts"] = verts
+data["faces"] = faces
+
+with open(savePath,"wb") as f:
+    pickle.dump(data,f)
+
+print(verts)
+print(faces)
+# for fid,vertices in tqdm(enumerate(v_gt[start_frame::skip])):
+#     name = str(fid)
+#     mesh.createMesh(name, vertices=vertices, faces=bm.faces, matrix=matrix)

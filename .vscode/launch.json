@@ -10,7 +10,10 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "/hddisk1/yifei_zhao/smplx-blender/packages"
+            }
         }
     ]
 }
