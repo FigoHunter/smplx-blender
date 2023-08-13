@@ -17,13 +17,13 @@ reload(material)
 reload(utils)
 
 skip=300
-start_frame=300
+start_frame=0
 
 device = "cpu"
 gender = "female"
 
 model_path=os.path.join(utils.DATA_PATH,"favor_preview","body_utils","body_models")
-path=os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1\A004-2023-0526-1808-38-task-1159-seq-73.pkl")
+path=os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1\A001-2023-0511-1802-23-task-236-seq-6.pkl")
 table_path=os.path.join(utils.DATA_PATH,"favor_preview","assets","table_only.obj")
 
 bm = body.get_body_model(model_path,"smplx", gender, 1, device=device)
@@ -50,11 +50,12 @@ print(affine_mat)
 whiteMat = material.createDiffuseMaterial(0.8,0.8,0.8,1)
 
 for i_mesh in indicator_meshes:
-    index=index+1
     name=f"indicator_{str(index)}"
     verts=i_mesh["verts"]
     faces=i_mesh["faces"]
     mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
+    index=index+1
+
 
 # smplx
 for fid, smplx_frame_d in tqdm(enumerate(smplx_data[start_frame:: skip])):
@@ -64,14 +65,15 @@ for fid, smplx_frame_d in tqdm(enumerate(smplx_data[start_frame:: skip])):
 
     verts = smplx_results.vertices.detach().cpu().numpy()[0]
     faces = bm.faces
-    name=str(fid)
+    name="smplx_" + str(fid)
     mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
 
     # manipulated
     verts = fixed_obj_mesh["verts"]
     
     faces = fixed_obj_mesh["faces"]
-    obj=mesh.createMesh("manip", vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
+    name="manip_" + str(fid)
+    obj=mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
     trs = obj_pose[fid * skip + start_frame]
     obj.matrix_world=mathutils.Matrix(np.matmul(np.matmul(affine_mat,trs), np.linalg.inv(affine_mat)))
     
