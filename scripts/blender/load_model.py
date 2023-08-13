@@ -22,12 +22,13 @@ start_frame=0
 device = "cpu"
 gender = "female"
 
+pkl="A001-2023-0511-1802-23-task-243-seq-12"
+
 model_path=os.path.join(utils.DATA_PATH,"favor_preview","body_utils","body_models")
-path=os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1\A001-2023-0511-1802-23-task-236-seq-6.pkl")
+path=os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1", pkl+".pkl")
 table_path=os.path.join(utils.DATA_PATH,"favor_preview","assets","table_only.obj")
 
 bm = body.get_body_model(model_path,"smplx", gender, 1, device=device)
-
 favor_data = pickle.load(open(path, "rb"))
 
 frames = favor_data["length"]
@@ -41,7 +42,7 @@ smplx_data = favor_data["smplx"]
 
 index=0
 
-matrix=np.array([[-1,0,0],[0,0,1],[0,1,0]])
+matrix=np.array([[1,0,0],[0,0,-1],[0,1,0]])
 affine_mat = matrix.copy()
 affine_mat = np.insert(affine_mat,3,values=[0,0,0],axis=1)
 affine_mat = np.insert(affine_mat,3,values=[0,0,0,1],axis=0)
