@@ -5,6 +5,7 @@ from tqdm import tqdm
 from smplx_blender import mesh,utils
 from importlib import reload
 import mathutils
+import bpy
 
 
 reload(mesh)
@@ -26,8 +27,9 @@ manip_trs = dumped["manip_trs"]
 
 for fid,vertices in tqdm(enumerate(verts[start_frame::skip])):
     name = str(fid)
-    mesh.createMesh(name, vertices=vertices, faces=faces, matrix=matrix)
+    obj = mesh.createMesh(name, vertices=vertices, faces=faces, matrix=matrix)
 
     manip = mesh.createMesh("manip",vertices=manip_verts,matrix=matrix)
+
     trs = manip_trs[fid * skip + start_frame]
     manip.matrix_world=mathutils.Matrix(np.matmul(np.matmul(affine_mat,trs), np.linalg.inv(affine_mat)))

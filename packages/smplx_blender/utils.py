@@ -3,7 +3,7 @@ import numpy as np
 
 HOME_PATH=os.getenv("HOME")
 DATA_PATH=os.path.join(HOME_PATH,"data")
-
+STARTUP_PATH=os.path.join(HOME_PATH,"startup")
 
 class ndarray_pydata(np.ndarray):
     def __bool__(self) -> bool:

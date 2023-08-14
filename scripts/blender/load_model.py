@@ -16,13 +16,15 @@ reload(mesh)
 reload(material)
 reload(utils)
 
+print("======================Start=============================")
+
 skip=300
 start_frame=0
 
 device = "cpu"
 gender = "female"
 
-pkl="A001-2023-0511-1802-23-task-243-seq-12"
+pkl="A001-2023-0511-1940-05-task-349-seq-36"
 
 model_path=os.path.join(utils.DATA_PATH,"favor_preview","body_utils","body_models")
 path=os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1", pkl+".pkl")
@@ -42,6 +44,13 @@ smplx_data = favor_data["smplx"]
 
 index=0
 
+split_frame = moving_frame[0]
+end_frame = moving_frame[1]
+fids = [*range(start_frame, split_frame, int((split_frame-start_frame)/4)-1)]
+fids.extend([*range(split_frame,end_frame,int((end_frame-split_frame)/4)-1)])
+print(fids)
+
+
 matrix=np.array([[1,0,0],[0,0,-1],[0,1,0]])
 affine_mat = matrix.copy()
 affine_mat = np.insert(affine_mat,3,values=[0,0,0],axis=1)
@@ -54,12 +63,14 @@ for i_mesh in indicator_meshes:
     name=f"indicator_{str(index)}"
     verts=i_mesh["verts"]
     faces=i_mesh["faces"]
-    mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
+    obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
+
     index=index+1
 
 
 # smplx
-for fid, smplx_frame_d in tqdm(enumerate(smplx_data[start_frame:: skip])):
+for fid in fids:
+    smplx_frame_d = smplx_data[fid]
     smplx_frame_d = {k: torch.tensor(v).to(device)[None] for k, v in smplx_frame_d.items()}
     smplx_frame_d["betas"] = torch.tensor(favor_data["betas"][None]).to(device)
     smplx_results = bm(return_verts=True, **smplx_frame_d)
@@ -67,7 +78,7 @@ for fid, smplx_frame_d in tqdm(enumerate(smplx_data[start_frame:: skip])):
     verts = smplx_results.vertices.detach().cpu().numpy()[0]
     faces = bm.faces
     name="smplx_" + str(fid)
-    mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
+    obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
 
     # manipulated
     verts = fixed_obj_mesh["verts"]
@@ -75,6 +86,7 @@ for fid, smplx_frame_d in tqdm(enumerate(smplx_data[start_frame:: skip])):
     faces = fixed_obj_mesh["faces"]
     name="manip_" + str(fid)
     obj=mesh.createMesh(name, vertices=verts, faces=faces, mat=whiteMat, matrix=matrix)
-    trs = obj_pose[fid * skip + start_frame]
+
+    trs = obj_pose[fid]
     obj.matrix_world=mathutils.Matrix(np.matmul(np.matmul(affine_mat,trs), np.linalg.inv(affine_mat)))
     

@@ -10,3 +10,6 @@ data/objs.blend1
 data/objs.blend
 data/render_setup.blend
 data/render_setup.blend1
+*.blend
+*.blend1
+data/render/*
