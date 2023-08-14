@@ -8,17 +8,10 @@ def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None):
     vertices = utils.ndarray_pydata.parse(vertices)
     if len(faces)>0:
         faces = utils.ndarray_pydata.parse(faces)
-    
-    print(vertices.__class__.__name__)
-    print(matrix.__class__.__name__)
 
     # 创建mesh
     mesh = bpy.data.meshes.new(name)
     if vertices:
-        print("Matrix: ")
-        print(matrix)
-        print("Verts")
-        print(vertices)
         if matrix is not None:
             vertices = np.transpose(np.matmul(matrix,np.transpose(vertices)))
         mesh.from_pydata(vertices, edges, faces)
@@ -28,6 +21,7 @@ def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None):
     # 创建对象
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.scene.collection.objects.link(obj)
+
 
     # 赋材质
     bpy.ops.object.select_all(action='DESELECT')
