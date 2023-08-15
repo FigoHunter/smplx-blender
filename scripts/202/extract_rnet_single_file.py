@@ -194,14 +194,13 @@ body_verts = np.asarray(v_gt[0].cpu().detach())
 extraction_data["offset"] = result["batch_gt"]["rel_trans"]
 
 extraction_data["manip_obj"]={}
-extraction_data["manip_obj"]["verts"] = obj_mesh.vertices
 extraction_data["manip_obj"]["faces"] = obj_mesh.faces
 
 extraction_data["body"]={}
 extraction_data["body"]["faces"]=tmp_face
 
 body_verts_frames=[]
-manip_transform_frames=[]
+manip_verts_frames=[]
 
 for k in range(sbj_output_gt.vertices.shape[0]):
     body_verts = np.asarray(v_gt[k].cpu().detach())
@@ -211,10 +210,11 @@ for k in range(sbj_output_gt.vertices.shape[0]):
     # manipul_body.compute_vertex_normals()
     # vis.update_geometry(manipul_body)
     new_transf = hand_global[k] @ delta_pose
-    manip_transform_frames.append(new_transf)
+    manip_verts = obj_mesh.vertices @ new_transf[:3, :3].T + new_transf[:3, 3]
+    manip_verts_frames.append(manip_verts)
 
 extraction_data["body"]["verts"]=np.array(body_verts_frames)
-extraction_data["manip_obj"]["transform"] = np.array(manip_transform_frames)
+extraction_data["manip_obj"]["verts"] = np.array(manip_verts_frames)
 
 
 path = os.path.join(output,os.path.splitext(os.path.basename(target))[0]+".pkl")
