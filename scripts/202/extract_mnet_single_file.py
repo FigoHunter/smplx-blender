@@ -65,12 +65,18 @@ female_model = SMPLXLayer(
 sbj_m = female_model.to(device)
 face = sbj_m.faces
 
+
+
+
+
+
+
 args = sys.argv
 target = args[1]
 output = args[2]
 path=target
 
-# path = os.path.join("/hddisk4/users/zenan/workdata/rosita_workdata/now_result_save/result1/RNet4rosita_infer_A002_s20_bs128_on50seqs_addObjFace_savePkl/RNet_inference_result/pkl/1","A002-2023-0419-1400-37-task-0-seq-2-cylinder_bottle_s390.pkl")
+# path = os.path.join("/hddisk4/users/zenan/workdata/rosita_workdata/now_result_save/result1/MNet4rosita_infer_A002_s20_bs128_reinfer4pkl_addObjFace_savePkl/MNet_inference_result/pkl/1","A002-2023-0419-1400-37-task-0-seq-2-cylinder_bottle_s390.pkl")
 result = np.load(path, allow_pickle=True)
 
 pp = path.split("/")[-1].split("-")[:9]
@@ -104,9 +110,9 @@ _, A = batch_rigid_transform(
 )
 hand_global = A[:, 21].cpu().numpy()  # T_wh, [B, 4, 4]
 
-obj_transf = np.eye(4)  # T_wo [4, 4]
-obj_transf[:3, :3] = obj_rot.T
-obj_transf[:3, 3] = obj_tsl
+# obj_transf = np.eye(4)  # T_wo [4, 4]
+# obj_transf[:3, :3] = obj_rot.T
+# obj_transf[:3, 3] = obj_tsl
 
 
 # from termcolor import cprint
@@ -136,11 +142,11 @@ result["sbj_params_pre"]["right_hand_pose"] = result["sbj_params_pre"]["right_ha
 sbj_output_gt = sbj_m(**result["sbj_params_pre"])
 v_gt = sbj_output_gt.vertices.reshape(-1, 10475, 3)  ##(22, 10475, 3)
 
-j_gt = sbj_output_gt.joints.reshape(batch_size, -1, 3)[:, 21]  # [B, 3]
-hand_global[:, :3, 3] = j_gt.cpu().detach().numpy()  # [B, 4, 4]
+# j_gt = sbj_output_gt.joints.reshape(batch_size, -1, 3)[:, 21]  # [B, 3]
+# hand_global[:, :3, 3] = j_gt.cpu().detach().numpy()  # [B, 4, 4]
 
 
-delta_pose = np.linalg.inv(hand_global[-1]) @ obj_transf  # T_ho , [4, 4]
+# delta_pose = np.linalg.inv(hand_global[-1]) @ obj_transf  # T_ho , [4, 4]
 
 
 tmp_face = sbj_m.faces
@@ -192,9 +198,11 @@ body_verts = np.asarray(v_gt[0].cpu().detach())
 #     pickle.dump(result, f)
 
 extraction_data["offset"] = result["batch_gt"]["rel_trans"].reshape(3).cpu().numpy()
-
+# obj_transf[:3, :3] = obj_rot.T
+# obj_transf[:3, 3] = obj_tsl
 extraction_data["manip_obj"]={}
 extraction_data["manip_obj"]["faces"] = np.array(obj_mesh.faces)
+extraction_data["manip_obj"]["verts"] = np.array([np.array(obj_mesh.vertices) @ obj_rot.T + obj_tsl])
 
 extraction_data["body"]={}
 extraction_data["body"]["faces"]=tmp_face
@@ -209,12 +217,15 @@ for k in range(sbj_output_gt.vertices.shape[0]):
     # manipul_body.triangles = o3d.utility.Vector3iVector(tmp_face)
     # manipul_body.compute_vertex_normals()
     # vis.update_geometry(manipul_body)
-    new_transf = hand_global[k] @ delta_pose
-    manip_verts = np.array(obj_mesh.vertices) @ new_transf[:3, :3].T + new_transf[:3, 3]
-    manip_verts_frames.append(manip_verts)
+    # new_transf = hand_global[k] @ delta_pose
+    # manip_verts = np.array(obj_mesh.vertices) @ new_transf[:3, :3].T + new_transf[:3, 3]
+    # manip_verts_frames.append(manip_verts)
 
 extraction_data["body"]["verts"]=np.array(body_verts_frames)
-extraction_data["manip_obj"]["verts"] = np.array(manip_verts_frames)
+# extraction_data["manip_obj"]["verts"] = np.array(manip_verts_frames)
+
+print(extraction_data)
+print("")
 
 path = os.path.join(output,os.path.splitext(os.path.basename(target))[0]+".pkl")
 dir = os.path.dirname(path)
