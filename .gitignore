@@ -13,3 +13,4 @@ data/render_setup.blend1
 *.blend
 *.blend1
 data/render/*
+data/render_setup.blend.bkp
