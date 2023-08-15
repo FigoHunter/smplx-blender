@@ -24,11 +24,10 @@ start_frame=0
 device = "cpu"
 gender = "female"
 
-pkl="A001-2023-0511-1940-05-task-349-seq-36"
+pkl="A002-2023-0419-1400-37-task-59-seq-56"
 
 model_path=os.path.join(utils.DATA_PATH,"favor_preview","body_utils","body_models")
 path=os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1", pkl+".pkl")
-table_path=os.path.join(utils.DATA_PATH,"favor_preview","assets","table_only.obj")
 
 bm = body.get_body_model(model_path,"smplx", gender, 1, device=device)
 favor_data = pickle.load(open(path, "rb"))
