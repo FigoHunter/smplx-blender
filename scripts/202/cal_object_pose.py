@@ -4,7 +4,6 @@ import pickle
 import os
 import open3d as o3d
 import time
-from psbody.mesh import MeshViewers, Mesh
 import time
 from visualization.task import Task
 import json
@@ -66,11 +65,12 @@ sbj_m = female_model.to(device)
 face = sbj_m.faces
 
 
-path = "tmp/RNet_inference_result/pkl/1/A002-2023-0419-1400-37-task-81-seq-78-cylinder_bottle_s298.pkl"
+data_dir = "/hddisk4/users/zenan/workdata/rosita_workdata/now_result_save/result1/RNet4rosita_infer_A002_s20_bs128_on50seqs_addObjFace_savePkl/RNet_inference_result"
+path = os.path.join("RNet4rosita_infer_A002_s20_bs128_on50seqs_addObjFace_savePkl/RNet_inference_result/tmp/RNet_inference_result/pkl/1","A002-2023-0419-1400-37-task-81-seq-78-cylinder_bottle_s298.pkl")
 result = np.load(path, allow_pickle=True)
 
 pp = path.split("/")[-1].split("-")[:9]
-task_path = "tmp/vg_data/grasp/" + f"{pp[0]}_{'-'.join(pp[1:5])}/" + "_".join(pp[5:]) + "/task_fixed.json"
+task_path = "/hddisk5/users/kailin/rosita_SAGA/tmp/vg_data_json/grasp/" + f"{pp[0]}_{'-'.join(pp[1:5])}/" + "_".join(pp[5:]) + "/task_fixed.json"
 task = Task.from_dict(json.load(open(task_path, "r")))
 
 print(task.object_mesh.obj_path)
