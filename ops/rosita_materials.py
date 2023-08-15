@@ -27,12 +27,22 @@ def __loadManipMaterials():
 
 def assign_indicator_materials(objects):
     mats = __loadIndicatorMaterials()
+    if len(objects)<1:
+        return
+    elif len(objects)<2:
+        objects[0].active_material=mats[0]
+        return
     for i, o in tqdm(enumerate(objects)):
         mat = mats[i%len(mats)]
         o.active_material = mat
 
 def assign_body_materials(objects):
     mats = __loadBodyMaterials()
+    if len(objects)<1:
+        return
+    elif len(objects)<2:
+        objects[0].active_material=mats[0]
+        return
     for i, o in tqdm(enumerate(objects)):
         mat_index = (int(i/(len(objects)-1)*(len(mats)-1))+1)%len(mats)
         mat = mats[mat_index]
@@ -40,6 +50,11 @@ def assign_body_materials(objects):
 
 def assign_manip_materials(objects):
     mats = __loadManipMaterials()
+    if len(objects)<1:
+        return
+    elif len(objects)<2:
+        objects[0].active_material=mats[0]
+        return
     for i, o in tqdm(enumerate(objects)):
         mat_index = (int(i/(len(objects)-1)*(len(mats)-1))+1)%len(mats)
         mat = mats[mat_index]
