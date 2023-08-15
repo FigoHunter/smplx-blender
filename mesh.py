@@ -24,10 +24,10 @@ def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None):
 
 
     # 赋材质
+    if not mat:
+        return obj
     bpy.ops.object.select_all(action='DESELECT')
     obj.select_set(True)
-    if not mat:
-        mat = material.createDiffuseMaterial(0.8,0,8,0.8)
     obj.active_material = mat
     bpy.context.view_layer.objects.active = obj
     bpy.ops.object.shade_smooth()
