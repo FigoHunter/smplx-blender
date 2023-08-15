@@ -1,17 +1,18 @@
+### 添加参数 pkl 路径，参考rnet
+
 import torch
 import numpy as np
 import pickle
 import os
-import open3d as o3d
+import sys
 import time
-import time
-from visualization.task import Task
 import json
 import trimesh
 from smplx.lbs import batch_rigid_transform, batch_rodrigues
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+extraction_data={}
 
 def parms_6D2full(pose, trans, d62rot=True):
     bs = trans.shape[0]
@@ -52,7 +53,7 @@ def full2bone(pose, trans):
 #     return t3d.rotation_6d_to_matrix(reshaped_input)
 
 
-model_path = "body_utils/body_models/smplx"
+model_path = "data/favor_preview/body_utils/body_models/smplx"
 from smplx import SMPLXLayer
 
 female_model = SMPLXLayer(
@@ -64,17 +65,20 @@ female_model = SMPLXLayer(
 sbj_m = female_model.to(device)
 face = sbj_m.faces
 
+args = sys.argv
+target = args[1]
+output = args[2]
 
-data_dir = "/hddisk4/users/zenan/workdata/rosita_workdata/now_result_save/result1/RNet4rosita_infer_A002_s20_bs128_on50seqs_addObjFace_savePkl/RNet_inference_result"
-path = os.path.join("RNet4rosita_infer_A002_s20_bs128_on50seqs_addObjFace_savePkl/RNet_inference_result/tmp/RNet_inference_result/pkl/1","A002-2023-0419-1400-37-task-81-seq-78-cylinder_bottle_s298.pkl")
+
+path = target
 result = np.load(path, allow_pickle=True)
 
 pp = path.split("/")[-1].split("-")[:9]
 task_path = "/hddisk5/users/kailin/rosita_SAGA/tmp/vg_data_json/grasp/" + f"{pp[0]}_{'-'.join(pp[1:5])}/" + "_".join(pp[5:]) + "/task_fixed.json"
-task = Task.from_dict(json.load(open(task_path, "r")))
-
-print(task.object_mesh.obj_path)
-obj_mesh = trimesh.load(task.object_mesh.obj_path, process=False, force="mesh")
+task_fixed = json.load(open(task_path, "r"))
+obj_path=task_fixed["object_mesh"]["obj_path"]
+print(obj_path)
+obj_mesh = trimesh.load(obj_path, process=False, force="mesh")
 
 obj_rot = result["obj_params_pre"]["global_orient_rotmat"][0].cpu().numpy()
 obj_tsl = result["obj_params_pre"]["transl"][0].cpu().numpy()
@@ -105,7 +109,7 @@ obj_transf[:3, :3] = obj_rot.T
 obj_transf[:3, 3] = obj_tsl
 
 
-from termcolor import cprint
+# from termcolor import cprint
 
 
 # hand_global_rot = torch.tensor(manipul_pose[int(frame.split(".")[0])]["h_pose"][0].reshape(-1), device=device)
@@ -143,42 +147,42 @@ tmp_face = sbj_m.faces
 tmp_obj_verts = None
 body_verts = np.asarray(v_gt[0].cpu().detach())
 
-vis = o3d.visualization.Visualizer()
-vis.create_window(width=640, height=640)
 
-manipul_obj = o3d.geometry.TriangleMesh()
-manipul_obj.vertices = o3d.utility.Vector3dVector(obj_mesh.vertices)
-manipul_obj.triangles = o3d.utility.Vector3iVector(obj_mesh.faces)
-manipul_obj.compute_vertex_normals()
-vis.add_geometry(manipul_obj)
+# vis = o3d.visualization.Visualizer()
+# vis.create_window(width=640, height=640)
 
-manipul_body = o3d.geometry.TriangleMesh()
-manipul_body.vertices = o3d.utility.Vector3dVector(body_verts)
-manipul_body.triangles = o3d.utility.Vector3iVector(tmp_face)
-manipul_body.compute_vertex_normals()
-vis.add_geometry(manipul_body)
+# manipul_obj = o3d.geometry.TriangleMesh()
+# manipul_obj.vertices = o3d.utility.Vector3dVector(obj_mesh.vertices)
+# manipul_obj.triangles = o3d.utility.Vector3iVector(obj_mesh.faces)
+# manipul_obj.compute_vertex_normals()
+# vis.add_geometry(manipul_obj)
 
-from visualization.transform import aa_to_rotmat, rotmat_to_aa
+# manipul_body = o3d.geometry.TriangleMesh()
+# manipul_body.vertices = o3d.utility.Vector3dVector(body_verts)
+# manipul_body.triangles = o3d.utility.Vector3iVector(tmp_face)
+# manipul_body.compute_vertex_normals()
+# vis.add_geometry(manipul_body)
 
-obj_global_rot = []
-obj_global_aa = []
-obj_tsl = []
-for k in range(sbj_output_gt.vertices.shape[0]):
-    new_transf = hand_global[k] @ delta_pose
-    obj_global_rot.append(new_transf[:3, :3].T)
-    obj_global_aa.append(rotmat_to_aa(new_transf[:3, :3].T))
-    obj_tsl.append(new_transf[:3, 3])
-obj_global_rot = np.stack(obj_global_rot)
-obj_global_aa = np.stack(obj_global_aa)
-obj_tsl = np.stack(obj_tsl)
 
-result["obj_params_pre"]["global_orient_rotmat"] = torch.tensor(obj_global_rot, device=device)
-result["obj_params_pre"]["global_orient"] = torch.tensor(obj_global_aa, device=device)
-result["obj_params_pre"]["transl"] = torch.tensor(obj_tsl, device=device)
+# obj_global_rot = []
+# # obj_global_aa = []
+# obj_tsl = []
+# for k in range(sbj_output_gt.vertices.shape[0]):
+#     new_transf = hand_global[k] @ delta_pose
+#     obj_global_rot.append(new_transf[:3, :3].T)
+#     # obj_global_aa.append(rotmat_to_aa(new_transf[:3, :3].T))
+#     obj_tsl.append(new_transf[:3, 3])
+# obj_global_rot = np.stack(obj_global_rot)
+# # obj_global_aa = np.stack(obj_global_aa)
+# obj_tsl = np.stack(obj_tsl)
+
+# result["obj_params_pre"]["global_orient_rotmat"] = torch.tensor(obj_global_rot, device=device)
+# # result["obj_params_pre"]["global_orient"] = torch.tensor(obj_global_aa, device=device)
+# result["obj_params_pre"]["transl"] = torch.tensor(obj_tsl, device=device)
 
 
 # relative tsl
-relative_tsl = result["batch_gt"]["rel_trans"]
+# relative_tsl = result["batch_gt"]["rel_trans"]
 # scene += relative_tsl
 
 
@@ -187,23 +191,52 @@ relative_tsl = result["batch_gt"]["rel_trans"]
 # with open(path, "wb") as f:
 #     pickle.dump(result, f)
 
+extraction_data["offset"] = result["batch_gt"]["rel_trans"]
+
+extraction_data["manip_obj"]={}
+extraction_data["manip_obj"]["verts"] = obj_mesh.vertices
+extraction_data["manip_obj"]["faces"] = obj_mesh.faces
+
+extraction_data["body"]={}
+extraction_data["body"]["faces"]=tmp_face
+
+body_verts_frames=[]
+manip_transform_frames=[]
 
 for k in range(sbj_output_gt.vertices.shape[0]):
     body_verts = np.asarray(v_gt[k].cpu().detach())
-    manipul_body.vertices = o3d.utility.Vector3dVector(body_verts)
-    manipul_body.triangles = o3d.utility.Vector3iVector(tmp_face)
-    manipul_body.compute_vertex_normals()
-    vis.update_geometry(manipul_body)
+    body_verts_frames.append(body_verts)
+    # manipul_body.vertices = o3d.utility.Vector3dVector(body_verts)
+    # manipul_body.triangles = o3d.utility.Vector3iVector(tmp_face)
+    # manipul_body.compute_vertex_normals()
+    # vis.update_geometry(manipul_body)
     new_transf = hand_global[k] @ delta_pose
-    manipul_obj.vertices = o3d.utility.Vector3dVector(obj_mesh.vertices @ new_transf[:3, :3].T + new_transf[:3, 3])
-    manipul_obj.triangles = o3d.utility.Vector3iVector(obj_mesh.faces)
-    manipul_obj.compute_vertex_normals()
-    vis.update_geometry(manipul_obj)
-    vis.poll_events()
-    vis.update_renderer()
-    time.sleep(0.2)
+    manip_transform_frames.append(new_transf)
 
-vis.run()
+extraction_data["body"]["verts"]=np.array(body_verts_frames)
+extraction_data["manip_obj"]["transform"] = np.array(manip_transform_frames)
+
+
+path = os.path.join(output,os.path.splitext(os.path.basename(target))[0]+".pkl")
+with open(path, "wb") as f:
+    pickle.dump(result, f)
+
+# for k in range(sbj_output_gt.vertices.shape[0]):
+#     body_verts = np.asarray(v_gt[k].cpu().detach())
+#     manipul_body.vertices = o3d.utility.Vector3dVector(body_verts)
+#     manipul_body.triangles = o3d.utility.Vector3iVector(tmp_face)
+#     manipul_body.compute_vertex_normals()
+#     vis.update_geometry(manipul_body)
+#     new_transf = hand_global[k] @ delta_pose
+#     manipul_obj.vertices = o3d.utility.Vector3dVector(obj_mesh.vertices @ new_transf[:3, :3].T + new_transf[:3, 3])
+#     manipul_obj.triangles = o3d.utility.Vector3iVector(obj_mesh.faces)
+#     manipul_obj.compute_vertex_normals()
+#     vis.update_geometry(manipul_obj)
+#     vis.poll_events()
+#     vis.update_renderer()
+#     time.sleep(0.2)
+
+# vis.run()
 
 
 # from scripts.vis_inet import open3d_show
