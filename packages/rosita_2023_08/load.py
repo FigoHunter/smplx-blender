@@ -6,6 +6,10 @@ def loadRnetData(path):
     data = pickle.load(open(path, "rb"))
     return data
 
+def loadMnetData(path):
+    data = pickle.load(open(path, "rb"))
+    return data
+
 def loadGroundTruthData(path):
     favor_data = pickle.load(open(path, "rb"))
     return favor_data
