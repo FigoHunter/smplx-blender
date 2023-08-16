@@ -76,7 +76,11 @@ target = args[1]
 output = args[2]
 path=target
 
-# path = os.path.join("/hddisk4/users/zenan/workdata/rosita_workdata/now_result_save/result1/MNet4rosita_infer_A002_s20_bs128_reinfer4pkl_addObjFace_savePkl/MNet_inference_result/pkl/1","A002-2023-0419-1400-37-task-0-seq-2-cylinder_bottle_s390.pkl")
+
+# output = os.path.abspath(os.path.join(os.path.dirname(__file__),"../../data/mnet_extracted"))
+# path = os.path.join("/hddisk4/users/zenan/workdata/rosita_workdata/now_result_save/result1/MNet4rosita_infer_A002_s20_bs128_reinfer4pkl_addObjFace_savePkl/MNet_inference_result/pkl/1",
+#                     "A002-2023-0419-1400-37-task-55-seq-52-bowl_s175.pkl")
+
 result = np.load(path, allow_pickle=True)
 
 pp = path.split("/")[-1].split("-")[:9]
@@ -202,7 +206,7 @@ extraction_data["offset"] = result["batch_gt"]["rel_trans"].reshape(3).cpu().num
 # obj_transf[:3, 3] = obj_tsl
 extraction_data["manip_obj"]={}
 extraction_data["manip_obj"]["faces"] = np.array(obj_mesh.faces)
-extraction_data["manip_obj"]["verts"] = np.array([np.array(obj_mesh.vertices) @ obj_rot.T + obj_tsl])
+extraction_data["manip_obj"]["verts"] = np.array([np.array(obj_mesh.vertices) @ obj_rot + obj_tsl])
 
 extraction_data["body"]={}
 extraction_data["body"]["faces"]=tmp_face
@@ -227,7 +231,7 @@ extraction_data["body"]["verts"]=np.array(body_verts_frames)
 print(extraction_data)
 print("")
 
-path = os.path.join(output,os.path.splitext(os.path.basename(target))[0]+".pkl")
+path = os.path.join(output,os.path.splitext(os.path.basename(path))[0]+".pkl")
 dir = os.path.dirname(path)
 if not os.path.exists(dir):
     os.makedirs(dir)
