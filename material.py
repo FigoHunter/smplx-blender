@@ -71,3 +71,7 @@ def bsdf_material(settings,name):
 def createDiffuseMaterial(r, g, b, a=1, name="diffuse"):
     material = colored_material_diffuse_BSDF(r, g, b, a=a, name=name)
     return material
+
+def getMaterialByName(name):
+    mat = bpy.data.materials.get(name)
+    return mat
