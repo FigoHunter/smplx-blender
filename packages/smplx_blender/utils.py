@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-HOME_PATH=os.getenv("HOME")
+HOME_PATH=os.getenv("WORKSPACE_HOME")
 DATA_PATH=os.path.join(HOME_PATH,"data")
 STARTUP_PATH=os.path.join(HOME_PATH,"startup")
 

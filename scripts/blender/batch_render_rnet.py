@@ -15,6 +15,10 @@ reload(render)
 reload(rosita_2023_08.load)
 reload(rosita_materials)
 
+filename="rnet_last_frame.png"
+
+res=(1440,1080)
+
 rnet_dir=rnet_path = os.path.join(utils.DATA_PATH, "rnet_extracted")
 render_setup_path = os.path.join(utils.DATA_PATH,"render_setup.blend")
 gt_dir = os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1")
@@ -50,9 +54,10 @@ for target in rnet_pkls:
     offset = extracted["offset"]@coord
     offset = (-offset[0], offset[1], table_height)
 
-    skip = int(len(body_verts_seq)/3)-1
+    skip = int(len(body_verts_seq)/2)-1
 
-    frames = [*range(start_frame,len(body_verts_seq),skip)]
+    # frames = [*range(start_frame,len(body_verts_seq),skip)]
+    frames=[len(body_verts_seq)-1]
 
     bpy.context.scene.objects["Environment"].location=offset
 
@@ -86,5 +91,5 @@ for target in rnet_pkls:
 
     gt_obj.location=offset
 
-    path=os.path.join(render_path, os.path.splitext(target)[0],"rnet.png")
-    render.render(path)
+    path=os.path.join(render_path, os.path.splitext(target)[0],filename)
+    render.render(path,res_x=res[0],res_y=res[1])
