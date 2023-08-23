@@ -22,7 +22,7 @@ res=(1440,1080)
 mnet_dir=rnet_path = os.path.join(utils.DATA_PATH, "mnet_extracted")
 render_setup_path = os.path.join(utils.DATA_PATH,"render_setup.blend")
 gt_dir = os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1")
-render_path = os.path.join(utils.DATA_PATH, "render","pred")
+render_path = os.path.join(utils.DATA_PATH, "render","pred_mid_table")
 
 coord=np.array([[1,0,0],[0,0,-1],[0,1,0]])
 
