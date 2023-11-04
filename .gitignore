@@ -18,3 +18,5 @@ data/render_setup.blend.bkp
 data/rnet_extracted/*
 data/mnet_extracted/*
 data/score/*
+.conda/
+.env

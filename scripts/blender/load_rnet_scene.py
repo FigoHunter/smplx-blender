@@ -5,7 +5,7 @@ import rosita_2023_08.load
 import numpy as np
 from tqdm import tqdm
 from importlib import reload
-from smplx_blender.ops import rosita_materials 
+from rosita_2023_08.ops import rosita_materials 
 import re
 
 reload(utils)

@@ -6,7 +6,7 @@ import bpy
 import mathutils
 from math import radians
 
-pkl = "A001-2023-0511-1802-23-task-243-seq-12"
+pkl = "A001-2023-0524-1808-12-task-626-seq-127"
 
 # pkl_path = os.path.join(r".\data",r"favor_preview\tmp\favor_pass1",pkl+".pkl")
 # replace_dir = os.path.join(r".\data",r"favor_preview\tmp\favor_pass1",pkl)
@@ -19,7 +19,7 @@ matrix=np.array([[1,0,0],[0,0,-1],[0,1,0]])
 affine_mat = utils.getAffineMat(matrix)
 
 replace_paths = glob.glob(os.path.join(replace_dir,"*.npz"))
-
+print(replace_dir)
 print(replace_paths)
 
 models = {}

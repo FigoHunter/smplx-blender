@@ -1,6 +1,6 @@
 import bpy
 
-from smplx_blender.ops.rosita_materials import IndicatorMaterialsOperator,BodyMaterialsOperator,ManipMaterialsOperator
+from rosita_2023_08.ops.rosita_materials import IndicatorMaterialsOperator,BodyMaterialsOperator,ManipMaterialsOperator
 
 
 bpy.utils.register_class(IndicatorMaterialsOperator)

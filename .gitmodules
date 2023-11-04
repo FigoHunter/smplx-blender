@@ -1,3 +1,6 @@
 [submodule "packages/smplx_blender"]
 	path = packages/smplx_blender
 	url = git@github.com:FigoHunter/smplx-blender.git
+[submodule "packages/blender_figo"]
+	path = packages/blender_figo
+	url = git@github.com:FigoHunter/blender-figo.git
