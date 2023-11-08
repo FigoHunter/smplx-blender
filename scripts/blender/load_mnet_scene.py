@@ -3,22 +3,14 @@ import os
 from smplx_blender import utils,mesh
 import rosita_2023_08.load
 import numpy as np
-from tqdm import tqdm
-from importlib import reload
 from rosita_2023_08.ops import rosita_materials 
 import re
 
-reload(utils)
-reload(mesh)
-reload(rosita_2023_08.load)
-reload(rosita_materials)
-
 target="A002-2023-0419-1400-37-task-0-seq-2-cylinder_bottle_s390.pkl"
 
-rnet_path = os.path.join(utils.DATA_PATH, "mnet_extracted", target)
+mnet_path = os.path.join(utils.DATA_PATH, "mnet_extracted", target)
 gt_dir = os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1")
-extracted = rosita_2023_08.load.loadMnetData(rnet_path)
-print(extracted)
+extracted = rosita_2023_08.load.loadMnetData(mnet_path)
 gt_target = re.findall(r'\S+-[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{2}-task-[0-9]+-seq-[0-9]+',target)[0]
 
 

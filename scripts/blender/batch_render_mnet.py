@@ -8,13 +8,6 @@ from importlib import reload
 from rosita_2023_08.ops import rosita_materials 
 import re
 
-reload(utils)
-reload(mesh)
-reload(file)
-reload(render)
-reload(rosita_2023_08.load)
-reload(rosita_materials)
-
 filename="mnet_last_frame.png"
 
 res=(1440,1080)
@@ -22,7 +15,7 @@ res=(1440,1080)
 mnet_dir=rnet_path = os.path.join(utils.DATA_PATH, "mnet_extracted")
 render_setup_path = os.path.join(utils.DATA_PATH,"render_setup.blend")
 gt_dir = os.path.join(utils.DATA_PATH,r"favor_preview\tmp\favor_pass1")
-render_path = os.path.join(utils.DATA_PATH, "render","pred_mid_table")
+render_path = os.path.join(utils.DATA_PATH, "render","predict")
 
 coord=np.array([[1,0,0],[0,0,-1],[0,1,0]])
 
@@ -54,10 +47,10 @@ for target in mnet_pkls:
     offset = extracted["offset"]@coord
     offset = (-offset[0], offset[1], table_height)
 
-    skip = int(len(body_verts_seq)/2)-1
+    skip = int(len(body_verts_seq)/4)-1
 
-    #frames = [*range(start_frame,len(body_verts_seq),skip)]
-    frames=[len(body_verts_seq)-1]
+    frames = [*range(start_frame,len(body_verts_seq),skip)]
+    # frames=[len(body_verts_seq)-1]
 
     bpy.context.scene.objects["Environment"].location=offset
 

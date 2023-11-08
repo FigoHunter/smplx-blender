@@ -17,6 +17,22 @@ def __loadBodyMaterials():
     assert len(mats)>0, "材质不存在"
     return mats
 
+def __loadApproachBodyMaterials(): 
+    mats=[]
+    for mat in bpy.data.materials:
+        if mat.name.startswith('approach_body'):
+            mats.append(mat)
+    assert len(mats)>0, "材质不存在"
+    return mats
+
+def __loadGrabBodyMaterials(): 
+    mats=[]
+    for mat in bpy.data.materials:
+        if mat.name.startswith('grab_body'):
+            mats.append(mat)
+    assert len(mats)>0, "材质不存在"
+    return mats
+
 def __loadManipMaterials(): 
     mats=[]
     for mat in bpy.data.materials:
@@ -38,6 +54,30 @@ def assign_indicator_materials(objects):
 
 def assign_body_materials(objects):
     mats = __loadBodyMaterials()
+    if len(objects)<1:
+        return
+    elif len(objects)<2:
+        objects[0].active_material=mats[0]
+        return
+    for i, o in tqdm(enumerate(objects)):
+        mat_index = (int(i/(len(objects)-1)*(len(mats)-1))+1)%len(mats)
+        mat = mats[mat_index]
+        o.active_material = mat
+
+def assign_approach_body_materials(objects):
+    mats = __loadApproachBodyMaterials()
+    if len(objects)<1:
+        return
+    elif len(objects)<2:
+        objects[0].active_material=mats[0]
+        return
+    for i, o in tqdm(enumerate(objects)):
+        mat_index = (int(i/(len(objects)-1)*(len(mats)-1))+1)%len(mats)
+        mat = mats[mat_index]
+        o.active_material = mat
+
+def assign_grab_body_materials(objects):
+    mats = __loadGrabBodyMaterials()
     if len(objects)<1:
         return
     elif len(objects)<2:

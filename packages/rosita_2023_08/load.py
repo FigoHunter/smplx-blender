@@ -13,7 +13,7 @@ def loadGroundTruthData(path):
     favor_data = pickle.load(open(path, "rb"))
     return favor_data
 
-def loadGroundTruthIndicator(data, mat=None, matrix=None):
+def loadGroundTruthIndicator(data, mat=None, matrix=None, *, collection=None):
     from smplx_blender import mesh,utils
 
     indicator_meshes = data["indicator_meshes"]
@@ -23,7 +23,7 @@ def loadGroundTruthIndicator(data, mat=None, matrix=None):
         name=f"indicator_{str(index)}"
         verts=i_mesh["verts"]
         faces=i_mesh["faces"]
-        obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=mat, matrix=matrix)
+        obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=mat, matrix=matrix, collection=collection)
         objs.append(obj)
         index=index+1
     return objs
@@ -31,7 +31,7 @@ def loadGroundTruthIndicator(data, mat=None, matrix=None):
 def loadGroundTruthMovingFrame(data):
     return data["moving_frame"]
 
-def loadGroundTruthBody(data, smplx_model, frames=None, mat=None, matrix=None):
+def loadGroundTruthBody(data, smplx_model, frames=None, mat=None, matrix=None, *, collection=None):
     import torch
     from smplx_blender import mesh,utils
 
@@ -55,14 +55,14 @@ def loadGroundTruthBody(data, smplx_model, frames=None, mat=None, matrix=None):
         verts = smplx_results.vertices.detach().cpu().numpy()[0]
         faces = smplx_model.faces
         name="smplx_" + str(fid)
-        obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=mat, matrix=matrix)
+        obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=mat, matrix=matrix,collection=collection)
         if single_frame:
             return obj
         else:
             objs.append(obj)
     return objs
 
-def loadGroundTruthManip(data, frames=None, mat=None, matrix=None):
+def loadGroundTruthManip(data, frames=None, mat=None, matrix=None, *, collection=None):
     import mathutils
     from smplx_blender import mesh,utils
 
@@ -82,7 +82,7 @@ def loadGroundTruthManip(data, frames=None, mat=None, matrix=None):
     affine_coord=mathutils.Matrix(utils.getAffineMat(matrix))
     for fid in frames:
         name="manip_" + str(fid)
-        obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=mat, matrix=matrix)
+        obj = mesh.createMesh(name, vertices=verts, faces=faces, mat=mat, matrix=matrix, collection=collection)
         trs = trs_list[fid]
         trs = mathutils.Matrix(trs_list[fid])
         obj.matrix_world = affine_coord@trs@affine_coord.inverted()

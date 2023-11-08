@@ -8,10 +8,6 @@ from importlib import reload
 from rosita_2023_08.ops import rosita_materials 
 import re
 
-reload(utils)
-reload(mesh)
-reload(rosita_2023_08.load)
-
 target="A002-2023-0419-1400-37-task-59-seq-56-dispenser11.pkl"
 
 rnet_path = os.path.join(utils.DATA_PATH, "rnet_extracted", target)

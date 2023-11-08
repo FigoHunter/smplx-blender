@@ -1,7 +1,6 @@
 
 def loadGroundTruthBody(data, smplx_model, frames=None, mat=None, matrix=None):
     import torch
-    from smplx_blender import mesh,utils
 
     smplx_data = data["smplx"]
     if frames == None:

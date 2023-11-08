@@ -11,3 +11,6 @@ bpy.types.VIEW3D_MT_object.append(BodyMaterialsOperator.menu_func)
 
 bpy.utils.register_class(ManipMaterialsOperator)
 bpy.types.VIEW3D_MT_object.append(ManipMaterialsOperator.menu_func)
+
+from rosita_2023_08 import omniobject3d
+omniobject3d.register()
