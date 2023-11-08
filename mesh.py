@@ -3,7 +3,7 @@ from .errors import MeshError
 from . import material,utils
 import numpy as np
 
-def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None):
+def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None, collection=None):
 
     vertices = utils.ndarray_pydata.parse(vertices)
     if len(faces)>0:
@@ -20,8 +20,10 @@ def createMesh(name,*, vertices, faces=[], edges=[],matrix=None, mat = None):
 
     # 创建对象
     obj = bpy.data.objects.new(name, mesh)
-    bpy.context.scene.collection.objects.link(obj)
-
+    if collection is None:
+        bpy.context.scene.collection.objects.link(obj)
+    else:
+        collection.objects.link(obj)
 
     # 赋材质
     if not mat:
