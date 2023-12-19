@@ -37,7 +37,7 @@ def loadGroundTruthBody(data, smplx_model, frames=None, mat=None, matrix=None, *
 
     smplx_data = data["smplx"]
     if frames == None:
-        frames=[*range(len(smplx_data))]
+        frames=0
 
     if isinstance(frames, int):
         frames=[frames]
